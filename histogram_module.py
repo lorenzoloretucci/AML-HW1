@@ -24,18 +24,20 @@ def normalized_hist(img_gray, num_bins):
 
     img_vector = img_gray.reshape(img_gray.size)
 
-    true_bins = np.arange(0, 255, 255/num_bins)
-    dict_pixel = {k: 0 for k in true_bins}
-    for el in img_vector:
-        for k in dict_pixel:
-            if el < k + 6.375 and el >= k:
-                dict_pixel[k] += 1
+    n = 255 / num_bins
+    hists = np.zeros(num_bins)
 
-    hists = np.array(list(dict_pixel.values()))
+    for el in img_vector:
+
+        if el == 255:
+            k = num_bins - 1
+        else:
+            k = int(el // n)
+
+        hists[k] += 1
 
     hists = hists / hists.sum()
-
-    bins = np.arange(0, 256, 6.375)
+    bins = np.arange(0, 256, n)
 
     return hists, bins
 
@@ -56,28 +58,31 @@ def rgb_hist(img_color_double, num_bins):
     assert len(img_color_double.shape) == 3, 'image dimension mismatch'
     assert img_color_double.dtype == 'float', 'incorrect image type'
 
-    vector_image = img_color.reshape(img_color.shape[0] * img_color_double.shape[1], 3)
+    n = 255/num_bins
 
-    true_bins = np.arange(0, 255, 51)
+    vector_image = img_color_double.reshape(img_color_double.shape[0] * img_color_double.shape[1], 3)
+
+    true_bins = np.arange(0, 255, n)
 
     #Define a 3D histogram  with "num_bins^3" number of entries
     hists = np.zeros((num_bins, num_bins, num_bins))
     
     # Loop for each pixel i in the image 
-    for i in range(img_color_double.shape[0]*img_color_double.shape[1]):
+    for i in range(img_color_double.shape[0] * img_color_double.shape[1]):
 
         for j in range(len(vector_image[i])):
 
-            for k, el in enumerate(true_bins):
+            if vector_image[i, j] == 255:
+                k = num_bins - 1
+            else:
+                k = int(vector_image[i, j] // n)
 
-                if vector_image[i, j] < el + 51 and vector_image[i, j] >= el:
-
-                    if j == 0:
-                        R = k
-                    elif j == 1:
-                        G = k
-                    else:
-                        B = k
+            if j == 0:
+                R = k
+            elif j == 1:
+                G = k
+            else:
+                B = k
 
         hists[R, G, B] += 1
 
@@ -107,31 +112,33 @@ def rg_hist(img_color_double, num_bins):
     assert len(img_color_double.shape) == 3, 'image dimension mismatch'
     assert img_color_double.dtype == 'float', 'incorrect image type'
 
-    vector_image= img_color.reshape(img_color.shape[0] * img_color_double.shape[1], 3)
-    true_bins = np.arange(0, 255, 51)
+    n = 255/num_bins
 
+    vector_image = img_color_double.reshape(img_color_double.shape[0] * img_color_double.shape[1], 3)
+    true_bins = np.arange(0, 255, n)
 
-    #Define a 2D histogram  with "num_bins^2" number of entries
+    # Define a 2D histogram  with "num_bins^2" number of entries
     hists = np.zeros((num_bins, num_bins))
 
     for i in range(img_color_double.shape[0] * img_color_double.shape[1]):
 
         for j in range(len(vector_image[i])):
 
-            for k, el in enumerate(true_bins):
+            if vector_image[i, j] == 255:
+                k = num_bins - 1
+            else:
+                k = int(vector_image[i, j] // n)
 
-                if vector_image[i, j] < el + 51 and vector_image[i, j] >= el:
-
-                    if j == 0:
-                        R = k
-                    elif j == 1:
-                        G = k
+            if j == 0:
+                R = k
+            elif j == 1:
+                G = k
 
         hists[R, G] += 1
 
     hists = hists / hists.sum()
 
-    #Return the histogram as a 1D vector
+    # Return the histogram as a 1D vector
     hists = hists.reshape(hists.size)
 
     return hists
@@ -152,15 +159,41 @@ def dxdy_hist(img_gray, num_bins):
     assert img_gray.dtype == 'float', 'incorrect image type'
 
 
-    #... (your code here)
+    #.....your code here
+    n_of_integers = list(range(-6, 7))
+    #n = len(n_of_integers) / num_bins
+    n = 12/num_bins
+    true_bins = np.arange(-6, 6, n)
+    true_bins[-1] = 6.0
 
+    [imgDx, imgDy] = gauss_module.gaussderiv(img_gray, 3.0)
+    vector_imgDx = imgDx.reshape(imgDx.size)
+    vector_imgDy = imgDy.reshape(imgDy.size)
 
     #Define a 2D histogram  with "num_bins^2" number of entries
     hists = np.zeros((num_bins, num_bins))
 
 
     #... (your code here)
+    for i in range(imgDx.size):
+        #for j, threshold in enumerate(true_bins):
+        if vector_imgDx[i] == 6:
+            kx = num_bins - 1
+            #elif vector_imgDx[i] >= threshold and vector_imgDx[i] < threshold + n:
+                #kx = j
+        else:
+            kx = int((vector_imgDx[i] + 6) // n)
 
+        if vector_imgDy[i] == 6:
+            ky = num_bins - 1
+            #elif vector_imgDy[i] >= threshold and vector_imgDy[i] < threshold + n:
+                #ky = j
+        else:
+            ky = int((vector_imgDy[i] + 6) // n)
+
+        hists[kx, ky] += 1
+
+    hists = hists / hists.sum()
 
     #Return the histogram as a 1D vector
     hists = hists.reshape(hists.size)
