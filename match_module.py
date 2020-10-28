@@ -25,16 +25,14 @@ def rgb2gray(rgb):
 #       expects grayvalue or color image
 
 def find_best_match(model_images, query_images, dist_type, hist_type, num_bins):
-
     hist_isgray = histogram_module.is_grayvalue_hist(hist_type)
-    
+
     model_hists = compute_histograms(model_images, hist_type, hist_isgray, num_bins)
     query_hists = compute_histograms(query_images, hist_type, hist_isgray, num_bins)
-    
+
     D = np.zeros((len(model_images), len(query_images)))
-    
-    
-    #... (your code here)
+
+    # ... (your code here)
     best_match = [0] * len(query_hists)
 
     for i, model in enumerate(model_hists):
@@ -42,28 +40,18 @@ def find_best_match(model_images, query_images, dist_type, hist_type, num_bins):
             if dist_type == 'intersect':
                 D[i, j] = dist_module.dist_intersect(model, query)
 
-                if i == 0:
-                    best_match[j] = i
-                elif D[i, j] < D[best_match[j], j]:
-                    best_match[j] = i
-
             elif dist_type == 'l2':
                 D[i, j] = dist_module.dist_l2(model, query)
-
-                if i == 0:
-                    best_match[j] = i
-                elif D[i, j] > D[best_match[j], j]:
-                    best_match[j] = i
 
             elif dist_type == 'chi2':
                 D[i, j] = dist_module.dist_chi2(model, query)
 
-                if i == 0:
-                    best_match[j] = i
-                elif D[i, j] > D[best_match[j], j]:
-                    best_match[j] = i
+            if i == 0:
+                best_match[j] = i
+            elif D[i, j] < D[best_match[j], j]:
+                best_match[j] = i
 
-    return best_match, D
+    return np.array(best_match), D
 
 
 
@@ -100,27 +88,56 @@ def compute_histograms(image_list, hist_type, hist_isgray, num_bins):
 # Note: use subplot command to show all the images in the same Python figure, one row per query image
 
 def show_neighbors(model_images, query_images, dist_type, hist_type, num_bins):
-    
-    
-    plt.figure(figsize=(30, 10))
+
+    plt.figure()
 
     num_nearest = 5  # show the top-5 neighbors
-    
-    #... (your code here)
+
+    # ... (your code here)
     best_match, D = find_best_match(model_images, query_images, dist_type, hist_type, num_bins)
+
     top_k = []
 
-    for col in D.shape[1]:
+    for col in range(D.shape[1]):
 
-        top_k.append(D[:,col].argsort()[-num_nearest:][::-1])
+        if dist_type == 'intersect':
+
+            top_k.append(D[:, col].argsort()[0:num_nearest])
+
+        else:
+
+            top_k.append(D[:, col].argsort()[-num_nearest:][::-1])
 
     for i, best in enumerate(top_k):
 
+        plt.rcParams["figure.figsize"] = [30, 10]
+        plt.tight_layout()
+
+        print('Axis for query image:', i)
+
+        img_color = np.array(Image.open(query_images[i]))
+        ax1 = plt.subplot(i + 1, num_nearest + 1, 1)
+        que = 'Q' + str(i)
+        ax1.set_title(que, size=25)
+        plt.sca(ax1)
+        plt.imshow(img_color, vmin=0, vmax=255)
+
         for j, img in enumerate(best):
 
-            plt.subplot(i, num_nearest, j)
+
             img_color = np.array(Image.open(model_images[img]))
-            plt.imshow(img_color)
+            ax = plt.subplot(i + 1, num_nearest + 1, j + 2)
+            title = 'M0.' + str(img)
+            ax.set_title(title, size=25)
+            plt.sca(ax)
+            plt.imshow(img_color, vmin=0, vmax=255)
+
+
+    plt.show()
+
+
+
+
 
 
 

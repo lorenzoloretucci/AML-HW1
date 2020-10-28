@@ -38,24 +38,18 @@ def dist_l2(x,y):
 # Add a minimum score to each cell of the histograms (e.g. 1) to avoid division by 0
 
 def dist_chi2(x,y):
-    
-    #... (your code here)
-    num = (x - y) ** 2
-    den = x + y
+    def dist_chi2(x, y):
 
-    chi2_distance = []
+        chi2_distance = 0
 
-    for i in range(len(num)):
-        if den[i] == 0 and num[i] == 0:
-            chi2_distance.append(0)
-        elif den[i] == 0 and num[i] != 0:
-            return np.inf
-        else:
-            chi2_distance.append(num[i] / den[i])
+        for i in range(len(x)):
 
-    chi2_distance = np.array(chi2_distance).sum()
+            if x[i] > 0 or y[i] > 0:
+                chi2_distance += (((x[i] - y[i]) ** 2)) / (x[i] + y[i])
+            else:
+                chi2_distance += 0
 
-    return chi2_distance
+        return chi2_distance
 
 
 def get_dist_by_name(x, y, dist_name):

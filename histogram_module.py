@@ -58,16 +58,16 @@ def rgb_hist(img_color_double, num_bins):
     assert len(img_color_double.shape) == 3, 'image dimension mismatch'
     assert img_color_double.dtype == 'float', 'incorrect image type'
 
-    n = 255/num_bins
+    n = 255 / num_bins
 
     vector_image = img_color_double.reshape(img_color_double.shape[0] * img_color_double.shape[1], 3)
 
     true_bins = np.arange(0, 255, n)
 
-    #Define a 3D histogram  with "num_bins^3" number of entries
+    # Define a 3D histogram  with "num_bins^3" number of entries
     hists = np.zeros((num_bins, num_bins, num_bins))
-    
-    # Loop for each pixel i in the image 
+
+    # Loop for each pixel i in the image
     for i in range(img_color_double.shape[0] * img_color_double.shape[1]):
 
         for j in range(len(vector_image[i])):
@@ -87,7 +87,6 @@ def rgb_hist(img_color_double, num_bins):
         hists[R, G, B] += 1
 
         pass
-
 
     #Normalize the histogram such that its integral (sum) is equal 1
     hists = hists / hists.sum()
@@ -158,36 +157,34 @@ def dxdy_hist(img_gray, num_bins):
     assert len(img_gray.shape) == 2, 'image dimension mismatch'
     assert img_gray.dtype == 'float', 'incorrect image type'
 
-
-    #.....your code here
-    n_of_integers = list(range(-6, 7))
-    #n = len(n_of_integers) / num_bins
-    n = 12/num_bins
-    true_bins = np.arange(-6, 6, n)
-    true_bins[-1] = 6.0
+    # .....your code here
+    n = 12 / num_bins
 
     [imgDx, imgDy] = gauss_module.gaussderiv(img_gray, 3.0)
     vector_imgDx = imgDx.reshape(imgDx.size)
     vector_imgDy = imgDy.reshape(imgDy.size)
 
-    #Define a 2D histogram  with "num_bins^2" number of entries
+    # Define a 2D histogram  with "num_bins^2" number of entries
     hists = np.zeros((num_bins, num_bins))
 
-
-    #... (your code here)
+    # ... (your code here)
     for i in range(imgDx.size):
-        #for j, threshold in enumerate(true_bins):
-        if vector_imgDx[i] == 6:
+
+        if vector_imgDx[i] >= 6:
             kx = num_bins - 1
-            #elif vector_imgDx[i] >= threshold and vector_imgDx[i] < threshold + n:
-                #kx = j
+
+        elif vector_imgDx[i] < -6:
+            ky = 0
         else:
             kx = int((vector_imgDx[i] + 6) // n)
 
-        if vector_imgDy[i] == 6:
+        if vector_imgDy[i] >= 6:
             ky = num_bins - 1
-            #elif vector_imgDy[i] >= threshold and vector_imgDy[i] < threshold + n:
-                #ky = j
+
+
+        elif vector_imgDy[i] < -6:
+            ky = 0
+
         else:
             ky = int((vector_imgDy[i] + 6) // n)
 
@@ -195,7 +192,7 @@ def dxdy_hist(img_gray, num_bins):
 
     hists = hists / hists.sum()
 
-    #Return the histogram as a 1D vector
+    # Return the histogram as a 1D vector
     hists = hists.reshape(hists.size)
     return hists
 
