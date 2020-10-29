@@ -17,9 +17,11 @@ def dist_intersect(x,y):
 
     intersect = 1 / 2 * (np.array(minima).sum() / x.sum() + np.array(minima).sum() / y.sum())
 
-    result = 1 - intersect
+    distance = 1 - intersect
 
-    return result
+    if distance >= 0 and distance <= 1:
+
+        return distance
 
 
 # Compute the L2 distance between x and y histograms
@@ -30,7 +32,9 @@ def dist_l2(x,y):
     #... (your code here)
     l2_distance = ((x - y) ** 2).sum()
 
-    return l2_distance
+    if l2_distance >= 0 and l2_distance <= np.sqrt(2):
+
+        return l2_distance
 
 
 # Compute chi2 distance between x and y
@@ -38,16 +42,14 @@ def dist_l2(x,y):
 # Add a minimum score to each cell of the histograms (e.g. 1) to avoid division by 0
 
 def dist_chi2(x,y):
-    def dist_chi2(x, y):
 
-        chi2_distance = 0
+    chi2_distance = 0
 
-        for i in range(len(x)):
+    for i in range(len(x)):
 
-            if x[i] > 0 or y[i] > 0:
-                chi2_distance += (((x[i] - y[i]) ** 2)) / (x[i] + y[i])
-            else:
-                chi2_distance += 0
+        chi2_distance += (((x[i]) - (y[i]))**2)/(x[i] + y[i] + 1)
+
+    if chi2_distance >= 0 and chi2_distance <= np.inf:
 
         return chi2_distance
 
