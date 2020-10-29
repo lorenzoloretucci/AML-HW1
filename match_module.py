@@ -99,41 +99,43 @@ def show_neighbors(model_images, query_images, dist_type, hist_type, num_bins):
     top_k = []
 
     for col in range(D.shape[1]):
+        top_k.append(D[:, col].argsort()[0:num_nearest])
 
-        if dist_type == 'intersect':
-
-            top_k.append(D[:, col].argsort()[0:num_nearest])
-
-        else:
-
-            top_k.append(D[:, col].argsort()[-num_nearest:][::-1])
-
+    cc = 1
+    
     for i, best in enumerate(top_k):
 
-        plt.rcParams["figure.figsize"] = [30, 10]
+
         plt.tight_layout()
 
-        print('Axis for query image:', i)
+        plt.rcParams["figure.figsize"] = [30, 10]
 
         img_color = np.array(Image.open(query_images[i]))
-        ax1 = plt.subplot(i + 1, num_nearest + 1, 1)
+        ax1 = plt.subplot(i + 1, num_nearest + 1, cc)
         que = 'Q' + str(i)
         ax1.set_title(que, size=25)
         plt.sca(ax1)
         plt.imshow(img_color, vmin=0, vmax=255)
+        plt.axis('off')
+        cc += 1
 
         for j, img in enumerate(best):
-
-
             img_color = np.array(Image.open(model_images[img]))
-            ax = plt.subplot(i + 1, num_nearest + 1, j + 2)
-            title = 'M0.' + str(img)
+            ax = plt.subplot(i + 1, num_nearest + 1, cc)
+            title = 'M' + str(round(D[img, i], 2))
             ax.set_title(title, size=25)
             plt.sca(ax)
             plt.imshow(img_color, vmin=0, vmax=255)
+            cc += 1
+            plt.axis('off')
+            plt.tight_layout()
 
+        plt.tight_layout()
 
-    plt.show()
+        plt.savefig('Intersect-rg {}'.format(i), dpi=100)
+        plt.show()
+
+    plt.close()
 
 
 
