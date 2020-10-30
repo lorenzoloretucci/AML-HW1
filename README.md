@@ -1,4 +1,4 @@
-# Exercise: Image filtering and Object Identification 
+# Exercise: Image Filtering and Object Identification 
 Hi! This is our repository for the first homework of advance machine learning course.
 
 Our Group: 
