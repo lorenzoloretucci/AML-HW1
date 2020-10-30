@@ -32,11 +32,9 @@ Output: smoothed image
 def gaussianfilter(img, sigma):
 
     Gx, x = gauss(sigma)
-    #Gauss_kernel = np.outer(Gx, Gx)
-    #Gauss_filter = Gauss_kernel / Gauss_kernel.sum()
+
     Gx = Gx.reshape(1, Gx.size)
     smooth_img = conv2(conv2(img, Gx, 'same'), Gx.T, 'same')
-    #smooth_img = conv2(img, Gauss_filter, mode='same')
 
     return smooth_img
 
@@ -59,23 +57,14 @@ def gaussdx(sigma):
 
 def gaussderiv(img, sigma):
 
-    smooth_img = gaussianfilter(img, sigma)
-
+    [Gx, x] = gauss(sigma)
     [Dx, x] = gaussdx(sigma)
 
+    Gx = Gx.reshape(1, Gx.size)
     Dx = Dx.reshape(1, Dx.size)
 
-    imgDx = conv2(smooth_img, Dx, 'same')
-    imgDy = conv2(smooth_img, Dx.T, 'same')
-
-    #Gx, x = gauss(sigma)
-    #Dx, x = gaussdx(sigma)
-
-    #Gx = Gx.reshape(1, Gx.size)
-    #Dx = Dx.reshape(1, Dx.size)
-
-    #imgDx = conv2(conv2(img, Dx, 'same'), Gx.T, 'same')
-    #imgDy = conv2(conv2(img, Gx, 'same'), Dx.T, 'same')
+    imgDx = conv2(conv2(img, Gx.T, 'same'), Dx, 'same')
+    imgDy = conv2(conv2(img, Gx, 'same'), Dx.T, 'same')
 
     return imgDx, imgDy
 
