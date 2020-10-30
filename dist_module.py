@@ -47,7 +47,7 @@ def dist_chi2(x,y):
 
     for i in range(len(x)):
 
-        chi2_distance += (((x[i]) - (y[i]))**2)/(x[i] + y[i] + 1)
+        chi2_distance += (((x[i] - y[i])**2)/(x[i] + y[i] + 1))
 
     if chi2_distance >= 0 and chi2_distance <= np.inf:
 
