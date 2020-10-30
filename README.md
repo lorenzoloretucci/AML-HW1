@@ -1,4 +1,4 @@
-# Advance Machine Learning AssignmentW1
+# Advance Machine Learning Assignment 1
 Hi! This is our repository for the first homework of advance machine learning course.
 
 Our group: 
